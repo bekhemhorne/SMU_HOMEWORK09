@@ -1,0 +1,102 @@
+
+Sub stonks()
+Dim ws As Worksheet
+For Each ws In ThisWorkbook.Worksheets
+    'Hold the sum
+    Dim totalVolume As Double
+    totalVolume = 0
+    'Keep track of row and stocks
+    Dim stock As String
+    Dim i As Double
+    'Yearly change
+    Dim openPrice As Double
+    openPrice = ws.Cells(2, 3).Value
+    Dim closingPrice As Double
+    Dim yearlyChange As Double
+    Dim percentChange As Double
+    'keep track of summary table rows
+    Dim summTableRow As Double
+    summTableRow = 2
+    Dim RowCount As Double
+    RowCount = ws.Cells(Rows.Count, "A").End(xlUp).Row
+    'Headers
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Columns(9).AutoFit
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Columns(10).AutoFit
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Columns(11).AutoFit
+        ws.Cells(1, 12).Value = "Total Volume"
+        ws.Columns(12).AutoFit
+        ws.Cells(1, 16).Value = "Ticker"
+        ws.Columns(16).AutoFit
+        ws.Cells(1, 17).Value = "Value"
+        ws.Columns(17).AutoFit
+        ws.Cells(2, 15).Value = "Greatest % Increase"
+        ws.Columns(15).AutoFit
+        ws.Cells(3, 15).Value = "Greatest % Decrease"
+        ws.Cells(4, 15).Value = "Greatest Total Volume"
+    'For each row
+    For i = 2 To RowCount
+        'Get the stock of row
+        stock = ws.Cells(i, 1).Value
+        'If the stock is different
+        If (stock <> ws.Cells(i + 1, 1).Value) Then
+            totalVolume = totalVolume + ws.Cells(i, 7).Value
+            'Find the last row of stocks
+            closingPrice = ws.Cells(i, 6).Value
+            yearlyChange = closingPrice - openPrice
+            percentChange = yearlyChange / openPrice
+            'write out summary table
+            ws.Cells(summTableRow, 9).Value = stock
+            ws.Cells(summTableRow, 10).Value = yearlyChange
+            ws.Cells(summTableRow, 11).Value = percentChange
+            ws.Cells(summTableRow, 12).Value = totalVolume
+        'Color format
+            If ws.Cells(summTableRow, 10) > 0 Then
+                ws.Cells(summTableRow, 10).Interior.ColorIndex = 5
+            Else
+                ws.Cells(summTableRow, 10).Interior.ColorIndex = 3
+            End If
+            'Reset
+            totalVolume = 0
+            summTableRow = summTableRow + 1
+            'Next row look ahead
+            openPrice = ws.Cells(i + 1, 3).Value
+            Else
+                totalVolume = totalVolume + ws.Cells(i, 7).Value
+          End If
+    Next i
+'Bonus
+    Dim j As Double
+    Dim volTicker As String
+    Dim maxVol As Double
+    Dim maxTick As String
+    Dim maxPerc As Double
+    Dim minTick As String
+    Dim minPerc As Double
+        maxVol = 0
+        maxPerc = -9999999999#
+        minPerc = 99999999999#
+        For j = 2 To summTableRow - 1
+            If (ws.Cells(j, 12).Value > maxVol) Then
+                maxVol = ws.Cells(j, 12).Value
+                volTicker = ws.Cells(j, 9).Value
+            End If
+            If (ws.Cells(j, 11).Value > maxPerc) Then
+                maxPerc = ws.Cells(j, 11).Value
+                maxTick = ws.Cells(j, 9).Value
+            End If
+            If (ws.Cells(j, 11).Value < minPerc) Then
+                minPerc = ws.Cells(j, 11).Value
+                minTick = ws.Cells(j, 9).Value
+            End If
+        Next j
+        ws.Cells(4, 16).Value = volTicker
+        ws.Cells(4, 17).Value = maxVol
+        ws.Cells(3, 16).Value = minTick
+        ws.Cells(3, 17).Value = minPerc
+        ws.Cells(2, 16).Value = maxTick
+        ws.Cells(2, 17).Value = maxPerc
+    Next ws
+End Sub
