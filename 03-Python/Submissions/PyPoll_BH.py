@@ -1,5 +1,5 @@
 import csv
-csvpath = "PyPoll/Resources/election_data.csv" 
+csvpath = "Instructions/PyPoll/Resources/election_data.csv" 
 
 #define
 rows = 0
@@ -28,8 +28,8 @@ with open(csvpath, encoding='utf-8') as csvfile:
         else:
             votes[candidate] = 1
         
-    for x in csvreader:
-        vote_percent = (rows / candidate)
+    #for x in csvreader:
+       # vote_percent = (rows / candidate)
 
         #Correct the spacing and add percentages
     
@@ -41,9 +41,12 @@ print("Election Results \n")
 print("---------------\n")
 print("Total Votes: " + str(rows) + "\n")
 print("---------------\n")
-print(vote_percent)
+#print(votes)
+for name in votes:
+    print(f"{name}: {round(votes[name]/ rows *100, 3)}% ({votes[name]})")
 print("---------------\n")
-#print("The winner is: " + winner)
+max_value = max(votes, key=votes.get)
+print("The winner is: " + max_value)
 print("---------------\n")
 
 
